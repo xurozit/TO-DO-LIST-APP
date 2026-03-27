@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cozy To-Do List</title>
-    <!-- 1. ADDED PROFESSIONAL GOOGLE FONT -->
+    <title>My Smart To-Do List</title>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #fbbf24; /* Warm Amber */
-            --bg: #fffbeb; /* Soft Cream */
-            --text: #78350f; /* Deep Brown (Better than black) */
-            --card-bg: rgba(255, 255, 255, 0.8);
+            --primary: #fbbf24;
+            --bg: #fffbeb;
+            --text: #78350f;
+            --card-bg: rgba(255, 255, 255, 0.85);
         }
 
         body {
-            font-family: 'Quicksand', sans-serif; /* 2. NEW CUTE PROFESSIONAL FONT */
+            font-family: 'Quicksand', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             display: flex;
@@ -24,40 +23,54 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden; /* Keeps background shapes inside */
+            overflow: hidden;
             position: relative;
         }
 
-        /* 3. ADDED CUTE BACKGROUND SHAPES */
+        /* Animated Background Blobs */
         .bg-shape {
             position: absolute;
             z-index: -1;
-            filter: blur(40px);
+            filter: blur(50px);
             border-radius: 50%;
-            opacity: 0.5;
-            animation: float 10s infinite alternate ease-in-out;
+            opacity: 0.4;
+            animation: float 15s infinite alternate ease-in-out;
         }
-        .shape-1 { width: 300px; height: 300px; background: #fef3c7; top: -50px; left: -50px; }
-        .shape-2 { width: 250px; height: 250px; background: #fde68a; bottom: -20px; right: -20px; animation-delay: 2s; }
+        .shape-1 { width: 400px; height: 400px; background: #fef3c7; top: -100px; left: -100px; }
+        .shape-2 { width: 350px; height: 350px; background: #fcd34d; bottom: -50px; right: -50px; animation-delay: 3s; }
 
         @keyframes float {
-            from { transform: translate(0, 0); }
-            to { transform: translate(20px, 30px); }
+            from { transform: translate(0, 0) rotate(0deg); }
+            to { transform: translate(40px, 50px) rotate(15deg); }
         }
 
         .container {
             background: var(--card-bg);
             backdrop-filter: blur(15px);
-            padding: 2.5rem;
+            padding: 2rem;
             border-radius: 30px;
             border: 2px solid white;
-            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.1);
+            box-shadow: 0 20px 40px rgba(120, 53, 15, 0.05);
             width: 90%;
-            max-width: 380px;
-            text-align: center;
+            max-width: 400px;
         }
 
-        h1 { font-weight: 700; font-size: 1.8rem; margin-bottom: 1.5rem; color: #92400e; }
+        h1 { font-weight: 700; margin-bottom: 0.5rem; text-align: center; color: #92400e; }
+        
+        /* FEATURE 1: Progress Bar */
+        .progress-container {
+            background: #fef3c7;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        #progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
 
         .input-group { display: flex; gap: 10px; margin-bottom: 1.5rem; }
 
@@ -69,69 +82,166 @@
             background: white;
             font-family: inherit;
             outline: none;
+            transition: 0.2s;
         }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
 
-        input:focus { border-color: var(--primary); }
-
-        button {
+        .add-btn {
             background: var(--primary);
             color: #92400e;
             border: none;
-            padding: 12px 20px;
+            padding: 0 20px;
             border-radius: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0px #d97706; /* 4. CUTE 3D BUTTON EFFECT */
+            box-shadow: 0 4px 0px #d97706;
+            transition: 0.1s;
         }
+        .add-btn:active { transform: translateY(3px); box-shadow: 0 1px 0px #d97706; }
 
-        button:active { transform: translateY(3px); box-shadow: 0 1px 0px #d97706; }
-
-        ul { list-style: none; padding: 0; }
+        ul { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; }
 
         li {
             background: white;
             margin-bottom: 10px;
-            padding: 15px;
+            padding: 12px 16px;
             border-radius: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-            animation: popIn 0.3s ease-out;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+        }
+        li:hover { border-color: #fde68a; }
+
+        /* FEATURE 2: Strikethrough Logic */
+        li.completed {
+            opacity: 0.6;
+            background: #fef3c7;
+        }
+        li.completed span { text-decoration: line-through; }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #ef4444;
+            border: none;
+            border-radius: 10px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
         }
 
-        .delete-btn { background: #fee2e2; color: #ef4444; border-radius: 10px; box-shadow: none; padding: 5px 10px; }
-
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .clear-btn {
+            width: 100%;
+            background: none;
+            border: 1px dashed #d97706;
+            color: #92400e;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Cute Background Blobs -->
     <div class="bg-shape shape-1"></div>
     <div class="bg-shape shape-2"></div>
 
     <div class="container">
-        <h1>✨ Today's Tasks</h1>
+        <h1>✨ My Day</h1>
+        <div class="progress-container"><div id="progress-bar"></div></div>
+        
         <div class="input-group">
-            <input type="text" id="todo-input" placeholder="What's your plan?">
-            <button onclick="addTask()">Add</button>
+            <input type="text" id="todo-input" placeholder="Type 'coffee' or 'study'...">
+            <button class="add-btn" onclick="addTask()">Add</button>
         </div>
+        
         <ul id="todo-list"></ul>
+        
+        <button class="clear-btn" onclick="clearAll()">🧹 Clear All Finished</button>
     </div>
 
     <script>
+        const input = document.getElementById('todo-input');
+        const list = document.getElementById('todo-list');
+        const progressBar = document.getElementById('progress-bar');
+
+        // FEATURE 3: SMART EMOJIS
+        const emojiMap = {
+            'coffee': '☕', 'tea': '🍵', 'study': '📚', 'read': '📖', 
+            'gym': '💪', 'workout': '🏃', 'code': '💻', 'mail': '📧',
+            'food': '🍕', 'sleep': '😴', 'call': '📞', 'shop': '🛒'
+        };
+
+        // LOAD FROM LOCAL STORAGE (FEATURE 4)
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
+        renderTasks();
+
         function addTask() {
-            const input = document.getElementById('todo-input');
-            const list = document.getElementById('todo-list');
-            if (input.value.trim() === '') return;
-            const li = document.createElement('li');
-            li.innerHTML = `<span>${input.value}</span><button class="delete-btn" onclick="this.parentElement.remove()">✕</button>`;
-            list.appendChild(li);
+            let text = input.value.trim();
+            if (text === '') return;
+
+            // Apply Smart Emoji
+            const firstWord = text.toLowerCase().split(' ')[0];
+            if (emojiMap[firstWord]) text = `${emojiMap[firstWord]} ${text}`;
+
+            tasks.push({ text: text, completed: false });
+            saveAndRender();
             input.value = '';
         }
-        document.getElementById('todo-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveAndRender();
+        }
+
+        function deleteTask(index, event) {
+            event.stopPropagation(); // Prevents clicking the task when clicking delete
+            tasks.splice(index, 1);
+            saveAndRender();
+        }
+
+        function clearAll() {
+            if (confirm("Clear all finished tasks?")) {
+                tasks = tasks.filter(t => !t.completed);
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('myTasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function renderTasks() {
+            list.innerHTML = '';
+            let completedCount = 0;
+
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                if (task.completed) {
+                    li.classList.add('completed');
+                    completedCount++;
+                }
+                
+                li.onclick = () => toggleTask(index);
+                li.innerHTML = `
+                    <span>${task.text}</span>
+                    <button class="delete-btn" onclick="deleteTask(${index}, event)">✕</button>
+                `;
+                list.appendChild(li);
+            });
+
+            // UPDATE PROGRESS BAR (FEATURE 5)
+            const percent = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
+            progressBar.style.width = percent + '%';
+        }
+
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
     </script>
 </body>
 </html>
