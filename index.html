@@ -5,72 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Professional To-Do List</title>
     <style>
+        /* 1. UPDATED COLORS & GRADIENTS */
         :root {
             --primary: #6366f1;
-            --bg: #0f172a;
-            --card: #1e293b;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card: rgba(30, 41, 59, 0.7); /* Translucent for glass effect */
             --text: #f8fafc;
+            --input-bg: rgba(15, 23, 42, 0.6);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg-gradient); /* 2. CHANGED to gradient background */
             color: var(--text);
             display: flex;
             justify-content: center;
-            padding-top: 50px;
+            align-items: center; /* 3. CENTERED vertically on screen */
+            min-height: 100vh;
+            margin: 0;
         }
 
         .container {
             background: var(--card);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            width: 100%;
+            backdrop-filter: blur(10px); /* 4. ADDED glass blur effect */
+            padding: 2.5rem;
+            border-radius: 24px; /* 5. ROUNDED corners more for modern look */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 6. ADDED subtle border */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 90%;
             max-width: 400px;
         }
 
-        h1 { font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        h1 { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            margin-bottom: 2rem; 
+            text-align: center; 
+            letter-spacing: -0.025em;
+        }
 
-        .input-group { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+        .input-group { 
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 2rem; 
+        }
 
         input {
             flex-grow: 1;
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px 16px;
+            border-radius: 12px;
             border: 1px solid #334155;
-            background: #0f172a;
+            background: var(--input-bg);
             color: white;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        /* 7. ADDED Focus state for input */
+        input:focus {
+            border-color: var(--primary);
         }
 
         button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
+            padding: 12px 20px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
-        button:hover { opacity: 0.9; }
+        /* 8. ADDED hover lift effect */
+        button:hover { 
+            opacity: 0.9; 
+            transform: translateY(-1px);
+        }
 
         ul { list-style: none; padding: 0; }
 
         li {
-            background: #334155;
-            margin-bottom: 8px;
-            padding: 10px;
-            border-radius: 6px;
+            background: rgba(51, 65, 85, 0.5);
+            margin-bottom: 12px;
+            padding: 14px 18px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            animation: fadeIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .delete-btn { background: #ef4444; padding: 5px 10px; font-size: 12px; }
+        .delete-btn { 
+            background: rgba(239, 68, 68, 0.2); 
+            color: #ef4444;
+            padding: 6px 12px; 
+            font-size: 12px; 
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
+        .delete-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.95); } 
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -79,7 +122,7 @@
     <h1>Task Manager</h1>
     <div class="input-group">
         <input type="text" id="todo-input" placeholder="Add a new task...">
-        <button onclick="addTask()">Add</button>
+        <button onclick="addTask()">Add Task</button>
     </div>
     <ul id="todo-list"></ul>
 </div>
@@ -101,7 +144,6 @@
         input.value = '';
     }
 
-    // Allow "Enter" key to add tasks
     document.getElementById('todo-input').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') addTask();
     });
