@@ -1,247 +1,421 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Smart To-Do List</title>
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
-    
-    <style>
-        :root {
-            --primary: #fbbf24;
-            --bg: #fffbeb;
-            --text: #78350f;
-            --card-bg: rgba(255, 255, 255, 0.85);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Day</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            position: relative;
-        }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: #fffbeb;
+    color: #78350f;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow-x: hidden;
+  }
 
-        /* Animated Background Blobs */
-        .bg-shape {
-            position: absolute;
-            z-index: -1;
-            filter: blur(50px);
-            border-radius: 50%;
-            opacity: 0.4;
-            animation: float 15s infinite alternate ease-in-out;
-        }
-        .shape-1 { width: 400px; height: 400px; background: #fef3c7; top: -100px; left: -100px; }
-        .shape-2 { width: 350px; height: 350px; background: #fcd34d; bottom: -50px; right: -50px; animation-delay: 3s; }
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.35;
+    z-index: 0;
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .blob-1 { width: 420px; height: 420px; background: #fde68a; top: -120px; left: -120px; }
+  .blob-2 { width: 360px; height: 360px; background: #fcd34d; bottom: -80px; right: -80px; animation-delay: 4s; }
 
-        @keyframes float {
-            from { transform: translate(0, 0) rotate(0deg); }
-            to { transform: translate(40px, 50px) rotate(15deg); }
-        }
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(35px, 45px) scale(1.05); }
+  }
 
-        .container {
-            background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            padding: 2rem;
-            border-radius: 30px;
-            border: 2px solid white;
-            box-shadow: 0 20px 40px rgba(120, 53, 15, 0.05);
-            width: 90%;
-            max-width: 400px;
-        }
+  .container {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(18px);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    border-radius: 28px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 12px 40px rgba(120, 53, 15, 0.08);
+  }
 
-        h1 { font-weight: 700; margin-bottom: 0.5rem; text-align: center; color: #92400e; }
-        
-        /* FEATURE 1: Progress Bar */
-        .progress-container {
-            background: #fef3c7;
-            height: 8px;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-        #progress-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.4s ease;
-        }
+  h1 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #92400e;
+    margin-bottom: 0.25rem;
+  }
 
-        .input-group { display: flex; gap: 10px; margin-bottom: 1.5rem; }
+  .subtitle {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #b45309;
+    margin-bottom: 1.25rem;
+    min-height: 1rem;
+    transition: opacity 0.3s;
+  }
 
-        input {
-            flex-grow: 1;
-            padding: 12px 18px;
-            border-radius: 15px;
-            border: 2px solid #fde68a;
-            background: white;
-            font-family: inherit;
-            outline: none;
-            transition: 0.2s;
-        }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+  .progress-wrap {
+    background: #fef3c7;
+    border-radius: 99px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
 
-        .add-btn {
-            background: var(--primary);
-            color: #92400e;
-            border: none;
-            padding: 0 20px;
-            border-radius: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 0px #d97706;
-            transition: 0.1s;
-        }
-        .add-btn:active { transform: translateY(3px); box-shadow: 0 1px 0px #d97706; }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    width: 0%;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
 
-        ul { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; }
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
 
-        li {
-            background: white;
-            margin-bottom: 10px;
-            padding: 12px 16px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid transparent;
-        }
-        li:hover { border-color: #fde68a; }
+  input[type="text"] {
+    flex: 1;
+    padding: 11px 16px;
+    border-radius: 14px;
+    border: 1.5px solid #fde68a;
+    background: #fff;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9rem;
+    color: #78350f;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.18);
+  }
+  input[type="text"]::placeholder { color: #d97706; opacity: 0.6; }
 
-        /* FEATURE 2: Strikethrough Logic */
-        li.completed {
-            opacity: 0.6;
-            background: #fef3c7;
-        }
-        li.completed span { text-decoration: line-through; }
+  .priority-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
 
-        .delete-btn {
-            background: #fee2e2;
-            color: #ef4444;
-            border: none;
-            border-radius: 10px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+  .priority-btn {
+    flex: 1;
+    padding: 7px 0;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    background: #fef3c7;
+    color: #92400e;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .priority-btn.active-low  { background: #dcfce7; border-color: #86efac; color: #15803d; }
+  .priority-btn.active-mid  { background: #fef9c3; border-color: #fde047; color: #a16207; }
+  .priority-btn.active-high { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
 
-        .clear-btn {
-            width: 100%;
-            background: none;
-            border: 1px dashed #d97706;
-            color: #92400e;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-    </style>
+  .add-btn {
+    background: #fbbf24;
+    color: #78350f;
+    border: none;
+    padding: 0 20px;
+    border-radius: 14px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #d97706;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .add-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #d97706; }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1rem;
+  }
+
+  .filter-btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 10px;
+    border: 1.5px solid #fde68a;
+    background: transparent;
+    color: #b45309;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active {
+    background: #fbbf24;
+    border-color: #fbbf24;
+    color: #78350f;
+  }
+
+  ul {
+    list-style: none;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+  ul::-webkit-scrollbar { width: 4px; }
+  ul::-webkit-scrollbar-track { background: transparent; }
+  ul::-webkit-scrollbar-thumb { background: #fde68a; border-radius: 99px; }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    background: #fff;
+    border-radius: 14px;
+    border: 1.5px solid transparent;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, opacity 0.2s, background 0.2s;
+    animation: popIn 0.2s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+  li:hover { border-color: #fde68a; }
+  li.done { opacity: 0.55; background: #fefce8; }
+  li.done .task-text { text-decoration: line-through; color: #a16207; }
+
+  .priority-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-low  { background: #4ade80; }
+  .dot-mid  { background: #facc15; }
+  .dot-high { background: #f87171; }
+
+  .task-text {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    word-break: break-word;
+  }
+
+  .delete-btn {
+    background: #fee2e2;
+    color: #ef4444;
+    border: none;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .delete-btn:hover { background: #fecaca; }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem 0;
+    color: #d97706;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .empty-state .empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+  .footer-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 1rem;
+  }
+
+  .clear-btn {
+    flex: 1;
+    background: none;
+    border: 1.5px dashed #d97706;
+    color: #92400e;
+    padding: 9px;
+    border-radius: 12px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .clear-btn:hover { background: #fef3c7; }
+</style>
 </head>
 <body>
 
-    <div class="bg-shape shape-1"></div>
-    <div class="bg-shape shape-2"></div>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
 
-    <div class="container">
-        <h1>✨ My Day</h1>
-        <div class="progress-container"><div id="progress-bar"></div></div>
-        
-        <div class="input-group">
-            <input type="text" id="todo-input" placeholder="Type 'coffee' or 'study'...">
-            <button class="add-btn" onclick="addTask()">Add</button>
-        </div>
-        
-        <ul id="todo-list"></ul>
-        
-        <button class="clear-btn" onclick="clearAll()">🧹 Clear All Finished</button>
-    </div>
+<div class="container">
+  <h1>✨ My Day</h1>
+  <p class="subtitle" id="subtitle">What's on your mind?</p>
 
-    <script>
-        const input = document.getElementById('todo-input');
-        const list = document.getElementById('todo-list');
-        const progressBar = document.getElementById('progress-bar');
+  <div class="progress-wrap">
+    <div id="progress-bar"></div>
+  </div>
 
-        // FEATURE 3: SMART EMOJIS
-        const emojiMap = {
-            'coffee': '☕', 'tea': '🍵', 'study': '📚', 'read': '📖', 
-            'gym': '💪', 'workout': '🏃', 'code': '💻', 'mail': '📧',
-            'food': '🍕', 'sleep': '😴', 'call': '📞', 'shop': '🛒'
-        };
+  <div class="input-row">
+    <input type="text" id="task-input" placeholder="Add a task..." maxlength="80">
+    <button class="add-btn" onclick="addTask()">+</button>
+  </div>
 
-        // LOAD FROM LOCAL STORAGE (FEATURE 4)
-        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [];
-        renderTasks();
+  <div class="priority-row">
+    <button class="priority-btn active-low" data-p="low"  onclick="selectPriority('low')">🟢 Low</button>
+    <button class="priority-btn"            data-p="mid"  onclick="selectPriority('mid')">🟡 Medium</button>
+    <button class="priority-btn"            data-p="high" onclick="selectPriority('high')">🔴 High</button>
+  </div>
 
-        function addTask() {
-            let text = input.value.trim();
-            if (text === '') return;
+  <div class="filters">
+    <button class="filter-btn active" data-f="all"    onclick="setFilter('all')">All</button>
+    <button class="filter-btn"        data-f="active" onclick="setFilter('active')">Active</button>
+    <button class="filter-btn"        data-f="done"   onclick="setFilter('done')">Done</button>
+  </div>
 
-            // Apply Smart Emoji
-            const firstWord = text.toLowerCase().split(' ')[0];
-            if (emojiMap[firstWord]) text = `${emojiMap[firstWord]} ${text}`;
+  <ul id="task-list"></ul>
 
-            tasks.push({ text: text, completed: false });
-            saveAndRender();
-            input.value = '';
-        }
+  <div class="footer-row">
+    <button class="clear-btn" onclick="clearDone()">🧹 Clear finished</button>
+  </div>
+</div>
 
-        function toggleTask(index) {
-            tasks[index].completed = !tasks[index].completed;
-            saveAndRender();
-        }
+<script>
+  const emojiMap = {
+    coffee:'☕', tea:'🍵', study:'📚', read:'📖', gym:'💪', workout:'🏃',
+    code:'💻', mail:'📧', email:'📧', food:'🍕', eat:'🍽️', sleep:'😴',
+    call:'📞', shop:'🛒', buy:'🛒', meeting:'📅', meet:'📅', water:'💧',
+    music:'🎵', write:'✍️', draw:'🎨', cook:'🍳', clean:'🧽', laundry:'👕',
+    walk:'🚶', run:'🏃', pay:'💳', doctor:'🩺', medicine:'💊'
+  };
 
-        function deleteTask(index, event) {
-            event.stopPropagation(); // Prevents clicking the task when clicking delete
-            tasks.splice(index, 1);
-            saveAndRender();
-        }
+  let tasks = [];
+  let selectedPriority = 'low';
+  let activeFilter = 'all';
 
-        function clearAll() {
-            if (confirm("Clear all finished tasks?")) {
-                tasks = tasks.filter(t => !t.completed);
-                saveAndRender();
-            }
-        }
+  function selectPriority(p) {
+    selectedPriority = p;
+    document.querySelectorAll('.priority-btn').forEach(btn => {
+      btn.className = 'priority-btn';
+      if (btn.dataset.p === p) btn.classList.add('active-' + p);
+    });
+  }
 
-        function saveAndRender() {
-            localStorage.setItem('myTasks', JSON.stringify(tasks));
-            renderTasks();
-        }
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.f === f);
+    });
+    render();
+  }
 
-        function renderTasks() {
-            list.innerHTML = '';
-            let completedCount = 0;
+  function getEmoji(text) {
+    const words = text.toLowerCase().split(/\s+/);
+    for (const w of words) {
+      if (emojiMap[w]) return emojiMap[w];
+    }
+    return null;
+  }
 
-            tasks.forEach((task, index) => {
-                const li = document.createElement('li');
-                if (task.completed) {
-                    li.classList.add('completed');
-                    completedCount++;
-                }
-                
-                li.onclick = () => toggleTask(index);
-                li.innerHTML = `
-                    <span>${task.text}</span>
-                    <button class="delete-btn" onclick="deleteTask(${index}, event)">✕</button>
-                `;
-                list.appendChild(li);
-            });
+  function addTask() {
+    const input = document.getElementById('task-input');
+    let text = input.value.trim();
+    if (!text) return;
+    const emoji = getEmoji(text);
+    if (emoji) text = emoji + ' ' + text;
+    tasks.push({ text, priority: selectedPriority, done: false, id: Date.now() });
+    input.value = '';
+    input.focus();
+    render();
+  }
 
-            // UPDATE PROGRESS BAR (FEATURE 5)
-            const percent = tasks.length > 0 ? (completedCount / tasks.length) * 100 : 0;
-            progressBar.style.width = percent + '%';
-        }
+  function toggleTask(id) {
+    const t = tasks.find(t => t.id === id);
+    if (t) t.done = !t.done;
+    render();
+  }
 
-        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') addTask(); });
-    </script>
+  function deleteTask(id, e) {
+    e.stopPropagation();
+    tasks = tasks.filter(t => t.id !== id);
+    render();
+  }
+
+  function clearDone() {
+    if (!tasks.some(t => t.done)) return;
+    tasks = tasks.filter(t => !t.done);
+    render();
+  }
+
+  function updateProgress() {
+    const total = tasks.length;
+    const done  = tasks.filter(t => t.done).length;
+    const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    const sub = document.getElementById('subtitle');
+    if (total === 0)      sub.textContent = "What's on your mind?";
+    else if (pct === 100) sub.textContent = "All done! Amazing work 🎉";
+    else if (pct >= 50)   sub.textContent = pct + '% done — keep going!';
+    else                  sub.textContent = done + ' of ' + total + ' tasks done';
+  }
+
+  function render() {
+    const list = document.getElementById('task-list');
+    list.innerHTML = '';
+
+    let visible = tasks;
+    if (activeFilter === 'active') visible = tasks.filter(t => !t.done);
+    if (activeFilter === 'done')   visible = tasks.filter(t => t.done);
+
+    if (visible.length === 0) {
+      const msg = activeFilter === 'done' ? 'Nothing finished yet.'
+                : activeFilter === 'active' ? 'All caught up!'
+                : 'Add your first task above.';
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">🌤️</div><div>' + msg + '</div></div>';
+      updateProgress();
+      return;
+    }
+
+    visible.forEach(task => {
+      const li = document.createElement('li');
+      if (task.done) li.classList.add('done');
+      li.onclick = () => toggleTask(task.id);
+      const dotClass = task.priority === 'low' ? 'dot-low' : task.priority === 'mid' ? 'dot-mid' : 'dot-high';
+      li.innerHTML =
+        '<div class="priority-dot ' + dotClass + '"></div>' +
+        '<span class="task-text">' + task.text + '</span>' +
+        '<button class="delete-btn" onclick="deleteTask(' + task.id + ', event)">✕</button>';
+      list.appendChild(li);
+    });
+
+    updateProgress();
+  }
+
+  document.getElementById('task-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTask();
+  });
+
+  render();
+</script>
 </body>
 </html>
